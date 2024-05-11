@@ -2,16 +2,22 @@ const {
   "pmspa-api": { api, apiVersion }
 } = require(`../../../config/${process.env.REACT_APP_API_CONFIG}.json`);
 
-const getTasksDocsCall = payload => {
+const getTasksDocsCall = (payload) => {
   return new Promise((resolve, reject) => {
     fetch(`${api}/${apiVersion}/stats/tasks?${payload}`, {
       method: "GET",
+      headers: {
+        Authorization: document.cookie
+          .split("; ")
+          .find((cookie) => cookie.includes("Bearer"))
+          ?.split("=")[1]
+      },
       // Credentials: include for setting the cookie in browser
       credentials: "include"
     })
-      .then(res => res.json())
-      .then(stats => resolve(stats))
-      .catch(error => reject(error));
+      .then((res) => res.json())
+      .then((stats) => resolve(stats))
+      .catch((error) => reject(error));
   });
 };
 
@@ -20,15 +26,19 @@ const editTaskCall = (taskId, payload) => {
     fetch(`${api}/${apiVersion}/tasks/${taskId}`, {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: document.cookie
+          .split("; ")
+          .find((cookie) => cookie.includes("Bearer"))
+          ?.split("=")[1]
       },
       // Credentials: include for setting the cookie in browser
       credentials: "include",
       body: JSON.stringify(payload)
     })
-      .then(res => res.json())
-      .then(stats => resolve(stats))
-      .catch(error => reject(error));
+      .then((res) => res.json())
+      .then((stats) => resolve(stats))
+      .catch((error) => reject(error));
   });
 };
 

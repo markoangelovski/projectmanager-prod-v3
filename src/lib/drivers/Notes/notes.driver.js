@@ -2,20 +2,24 @@ const {
   "pmspa-api": { api, apiVersion }
 } = require(`../../../config/${process.env.REACT_APP_API_CONFIG}.json`);
 
-const postNoteCall = payload => {
+const postNoteCall = (payload) => {
   return new Promise((resolve, reject) => {
     fetch(`${api}/${apiVersion}/notes`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: document.cookie
+          .split("; ")
+          .find((cookie) => cookie.includes("Bearer"))
+          ?.split("=")[1]
       },
       // Credentials: include for setting the cookie in browser
       credentials: "include",
       body: JSON.stringify(payload)
     })
-      .then(res => res.json())
-      .then(stats => resolve(stats))
-      .catch(error => reject(error));
+      .then((res) => res.json())
+      .then((stats) => resolve(stats))
+      .catch((error) => reject(error));
   });
 };
 
@@ -24,28 +28,38 @@ const editNoteCall = ({ noteId, data }) => {
     fetch(`${api}/${apiVersion}/notes/${noteId}`, {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: document.cookie
+          .split("; ")
+          .find((cookie) => cookie.includes("Bearer"))
+          ?.split("=")[1]
       },
       // Credentials: include for setting the cookie in browser
       credentials: "include",
       body: JSON.stringify({ data })
     })
-      .then(res => res.json())
-      .then(stats => resolve(stats))
-      .catch(error => reject(error));
+      .then((res) => res.json())
+      .then((stats) => resolve(stats))
+      .catch((error) => reject(error));
   });
 };
 
-const deleteNoteCall = noteId => {
+const deleteNoteCall = (noteId) => {
   return new Promise((resolve, reject) => {
     fetch(`${api}/${apiVersion}/notes/${noteId}`, {
       method: "DELETE",
+      headers: {
+        Authorization: document.cookie
+          .split("; ")
+          .find((cookie) => cookie.includes("Bearer"))
+          ?.split("=")[1]
+      },
       // Credentials: include for setting the cookie in browser
       credentials: "include"
     })
-      .then(res => res.json())
-      .then(stats => resolve(stats))
-      .catch(error => reject(error));
+      .then((res) => res.json())
+      .then((stats) => resolve(stats))
+      .catch((error) => reject(error));
   });
 };
 

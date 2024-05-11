@@ -2,16 +2,22 @@ const {
   "pmspa-api": { api, apiVersion, api_booking_machine }
 } = require(`../../../config/${process.env.REACT_APP_API_CONFIG}.json`);
 
-const getEventsCall = payload => {
+const getEventsCall = (payload) => {
   return new Promise((resolve, reject) => {
     fetch(`${api}/${apiVersion}/days/event.find?${payload}`, {
       method: "GET",
+      headers: {
+        Authorization: document.cookie
+          .split("; ")
+          .find((cookie) => cookie.includes("Bearer"))
+          ?.split("=")[1]
+      },
       // Credentials: include for setting the cookie in browser
       credentials: "include"
     })
-      .then(res => res.json())
-      .then(stats => resolve(stats))
-      .catch(error => reject(error));
+      .then((res) => res.json())
+      .then((stats) => resolve(stats))
+      .catch((error) => reject(error));
   });
 };
 
@@ -26,9 +32,9 @@ const editEventCall = (eventId, payload) => {
       credentials: "include",
       body: JSON.stringify(payload)
     })
-      .then(res => res.json())
-      .then(stats => resolve(stats))
-      .catch(error => reject(error));
+      .then((res) => res.json())
+      .then((stats) => resolve(stats))
+      .catch((error) => reject(error));
   });
 };
 
@@ -42,21 +48,21 @@ const bookEventCall = (eventId, day, amount) => {
         headers: {
           Authorization: document.cookie
             .split("; ")
-            .find(cookie => cookie.includes("Bearer"))
+            .find((cookie) => cookie.includes("Bearer"))
             .split("=")[1]
         }
       }
     )
-      .then(res => {
+      .then((res) => {
         status = res.status;
         return res.json();
       })
-      .then(stats => resolve({ status, ...stats }))
-      .catch(error => reject(error));
+      .then((stats) => resolve({ status, ...stats }))
+      .catch((error) => reject(error));
   });
 };
 
-const deleteBookingCall = bookingId => {
+const deleteBookingCall = (bookingId) => {
   return new Promise((resolve, reject) => {
     let status;
     fetch(`${api_booking_machine}/delete?bookingId=${bookingId}`, {
@@ -64,16 +70,16 @@ const deleteBookingCall = bookingId => {
       headers: {
         Authorization: document.cookie
           .split("; ")
-          .find(cookie => cookie.includes("Bearer"))
+          .find((cookie) => cookie.includes("Bearer"))
           .split("=")[1]
       }
     })
-      .then(res => {
+      .then((res) => {
         status = res.status;
         return res.json();
       })
-      .then(stats => resolve({ status, ...stats }))
-      .catch(error => reject(error));
+      .then((stats) => resolve({ status, ...stats }))
+      .catch((error) => reject(error));
   });
 };
 

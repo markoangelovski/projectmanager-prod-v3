@@ -26,7 +26,7 @@ const NavMain = () => {
           Authorization: document.cookie
             .split("; ")
             .find((cookie) => cookie.includes("Bearer"))
-            .split("=")[1]
+            ?.split("=")[1]
         }
       })
         .then((res) => res.json())

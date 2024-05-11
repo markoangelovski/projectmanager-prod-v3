@@ -7,19 +7,25 @@ const checkAuthCall = () => {
   return new Promise((resolve, reject) => {
     fetch(`${api}/${apiVersion}/auth`, {
       method: "POST",
+      headers: {
+        Authorization: document.cookie
+          .split("; ")
+          .find((cookie) => cookie.includes("Bearer"))
+          ?.split("=")[1]
+      },
       // Credentials: include for sending the cookie from the browser to the backend
       credentials: "include"
     })
-      .then(res => {
+      .then((res) => {
         status = res.status;
         return res.json();
       })
-      .then(msg => resolve({ status, ...msg }))
-      .catch(error => reject(error));
+      .then((msg) => resolve({ status, ...msg }))
+      .catch((error) => reject(error));
   });
 };
 
-const logInCall = payload => {
+const logInCall = (payload) => {
   return new Promise((resolve, reject) => {
     fetch(`${api}/${apiVersion}/auth/login`, {
       method: "POST",
@@ -30,12 +36,12 @@ const logInCall = payload => {
       credentials: "include",
       body: JSON.stringify(payload)
     })
-      .then(res => {
+      .then((res) => {
         document.cookie = "booking=" + res.headers.get("X-Auth");
         return res.json();
       })
-      .then(token => resolve(token))
-      .catch(error => reject(error));
+      .then((token) => resolve(token))
+      .catch((error) => reject(error));
   });
 };
 
@@ -43,12 +49,18 @@ const logOutCall = () => {
   return new Promise((resolve, reject) => {
     fetch(`${api}/${apiVersion}/auth/logout`, {
       method: "GET",
+      headers: {
+        Authorization: document.cookie
+          .split("; ")
+          .find((cookie) => cookie.includes("Bearer"))
+          ?.split("=")[1]
+      },
       // Credentials: include for setting the cookie in browser
       credentials: "include"
     })
-      .then(res => res.json())
-      .then(token => resolve(token))
-      .catch(error => reject(error));
+      .then((res) => res.json())
+      .then((token) => resolve(token))
+      .catch((error) => reject(error));
   });
 };
 
